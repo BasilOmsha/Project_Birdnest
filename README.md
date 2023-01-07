@@ -32,7 +32,7 @@ The main files can be found under: <br>
 - Add the data to the databas ✔
 - Keep only the drones that are violating ✔
 - Compare the distances each pilot has and keeping the closest distance recorded ✔
-- Read all the remainig data from the db parse it into JSON ans send it to the client ✔
+- Read all the remainig data from the db, parse it into JSON and send it to the client ✔
 - Delete 10 minutes old data by comparing the drones timestamps the current timestamp ✔
 
 ## In progress ⏲
