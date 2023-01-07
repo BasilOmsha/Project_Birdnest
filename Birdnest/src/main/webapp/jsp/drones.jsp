@@ -12,7 +12,7 @@
 <head>
 <meta http-equiv="refresh" charset="UTF-8">
 <title>Drone Data</title>
-<link rel="stylesheet" href="../css/signup-style.css" />
+<link rel="stylesheet" href="../css/style.css" />
 
 </head>
 <style>
