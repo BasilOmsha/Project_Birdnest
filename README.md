@@ -1,2 +1,48 @@
 # Project_Birdnest
-This is a web application for Reaktor 2023 summer trainee assignment 
+## Purpose
+This is a web application fulfilling the requirments asked for the summer 2023 trainee position by Reaktor, which are:<br>
+
+- only query this information for the drones violating the NDZ.
+- Persist the pilot information for 10 minutes since their drone was last seen by the equipment
+- Display the closest confirmed distance to the nest
+- Contain the pilot name, email address and phone number
+- Immediately show the information from the last 10 minutes to anyone opening the application
+- Not require the user to manually refresh the view to see up-to-date information
+
+More info found on this link -> https://assignments.reaktor.com/birdnest/
+
+## Solution
+This soution was created using Google App Engine Standard Java Project and was developed on Eclipse IDE. Runs on localhost:8080.
+
+The main files can be found under: <br>
+- /Birdnest/src/main/java
+- /Birdnest/src/main/webapp
+
+### Backedend tech
+- Servlets
+- Javascript
+
+### Frontend teck
+- Jsp
+- Javascript
+- css
+
+## What was achieved? 📝
+- Scrap the data from the urls given ✔
+- Add the data to the databas ✔
+- Keep only the drones that are violating ✔
+- Compare the distances each pilot has and keeping the closest distance recorded ✔
+- Read all the remainig data from the db parse it into JSON ans send it to the client ✔
+- Delete 10 minutes old data by checkingthe timestamp ✔
+
+## In process ⏲
+- Do more testing
+- Improve the interface
+
+## Images
+
+![UI](https://user-images.githubusercontent.com/107993017/211172118-98770918-eeb4-4945-ae49-4d0b0e749c2a.png)
+
+![drones_databaseTable](https://user-images.githubusercontent.com/107993017/211171785-2a976ad6-05ac-4a36-ae93-a31044945422.png)
+
+
