@@ -35,7 +35,7 @@ The main files can be found under: <br>
 - Read all the remainig data from the db parse it into JSON ans send it to the client ✔
 - Delete 10 minutes old data by checkingthe timestamp ✔
 
-## In process ⏲
+## In progress ⏲
 - Do more testing
 - Improve the interface
 
