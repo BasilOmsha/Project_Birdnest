@@ -22,7 +22,7 @@ The main files can be found under: <br>
 - Servlets
 - Javascript
 
-### Frontend teck
+### Frontend tech
 - Jsp
 - Javascript
 - css
