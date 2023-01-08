@@ -34,6 +34,7 @@ The main files can be found under: <br>
 - Compare the distances each pilot has and keep the closest distance recorded for each pilot ✔
 - Read all the remainig data from the db, parse it into JSON and send it to the client where they can see first the older data ✔
 - Delete 10+ minutes old data by comparing the drones timestamps to the current timestamp ✔
+- The table updates without the need for refreshing the page ✔
 
 ## In progress ⏲
 - Do more testing
