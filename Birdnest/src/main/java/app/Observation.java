@@ -5,6 +5,7 @@ import java.util.ArrayList;
 
 import java.util.List;
 
+import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -18,7 +19,9 @@ import model.Violations;
 @WebServlet(name = "obs", urlPatterns = { "/obs" })
 public class Observation extends HttpServlet {
 	private static final long serialVersionUID = 1L;
-	// This servlet retrieves the data from the xml URLs abd append them to the db with dao functions
+
+	// This servlet retrieves the data from the xml URLs abd append them to the db
+	// with dao functions
 	@Override
 	public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		Dao dao = new Dao();
@@ -38,7 +41,16 @@ public class Observation extends HttpServlet {
 							+ " " + v.getPositionY() + " " + v.getPositionX() + " " + v.getDistance() + " "
 							+ v.getNDZStatus());
 				}
-				response.sendRedirect("./jsp/drones.jsp");
+//				response.sendRedirect("./jsp/drones.jsp");
+				try {
+					request.setAttribute("violations", violations);
+
+					RequestDispatcher rd = request.getRequestDispatcher("./jsp/drones.jsp");
+					rd.include(request, response);
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 
 			} else {
 				System.out.println("Error");

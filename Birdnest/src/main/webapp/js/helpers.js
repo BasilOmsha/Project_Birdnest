@@ -70,7 +70,7 @@
 			var distance = document.createElement('input');
 			distance.setAttribute('type', 'text');
 			distance.setAttribute('id', 'all');
-			distance.setAttribute('value', item.distance);
+			distance.setAttribute('value', item.distance + ' meters');
 			distance.setAttribute('readonly', true);
 			distanceTd.appendChild(distance);
 
