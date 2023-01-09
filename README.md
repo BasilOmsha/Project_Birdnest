@@ -38,6 +38,7 @@ The main files can be found under: <br>
 
 ## In progress ⏲
 - Do more testing
+- <strike> bug fix </strike>
 - Improve the interface
 
 ## Images
