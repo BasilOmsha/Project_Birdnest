@@ -32,6 +32,7 @@ import javax.persistence.EntityManagerFactory;
 import javax.persistence.EntityTransaction;
 import javax.persistence.Persistence;
 import javax.persistence.Query;
+import javax.persistence.TypedQuery;
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
@@ -109,7 +110,7 @@ public class Dao {
 
 		String url = "https://assignments.reaktor.com/birdnest/drones?timestamp=" + currentTimestamp;
 		System.out.println("url: " + url);
-		Violations v = new Violations();
+		Violations v2 = new Violations();
 		String snapshotTimestamp = null;
 
 		try {
@@ -154,7 +155,7 @@ public class Dao {
 
 							if (xmlStreamReader.getLocalName().equals("capture")) {
 
-								snapshotTimestamp = v.setSnapshotTimestamp(
+								snapshotTimestamp = v2.setSnapshotTimestamp(
 										xmlStreamReader.getAttributeValue(null, "snapshotTimestamp"));
 //								violations.add(v);
 							}
@@ -212,25 +213,44 @@ public class Dao {
 //					double altitude = Double
 //							.parseDouble(droneElement.getElementsByTagName("altitude").item(0).getTextContent());
 
-					double distance = v.setDistance2(positionY, positionX);
-					System.out.println("Distance: " + distance);
+					double distance = v2.setDistance2(positionY, positionX);
+					System.out.println("Checking Distance: " + distance + " " + firstName + " " + lastName + "\n");
+
+					Violations v = new Violations();
 
 					// violating drones
 					if (distance <= 100) {
 						String NDZStatus = v.setNDZStatus1("Violating!");
 
-						v = new Violations(snapshotTimestamp, serialNumber, model, positionY, positionX, distance,
-								pilotId, firstName, lastName, phoneNumber, email, NDZStatus);
+						v.setSnapshotTimestamp(snapshotTimestamp);
+						v.setSerialNumber(serialNumber);
+						v.setModel(model);
+						v.setPositionY(positionY);
+						v.setPositionX(positionX);
+						v.setDistance(distance);
+						v.setPilotId(pilotId);
+						v.setFirstName(firstName);
+						v.setLastName(lastName);
+						v.setPhoneNumber(phoneNumber);
+						v.setEmail(email);
+						v.setNDZStatus(NDZStatus);
 						violations.add(v);
-
-//						dao.addVioltions(v);
-						System.out.println("Refreshing...");
 					} else {
 						String NDZStatus = v.setNDZStatus2("Not Violating!");
-						v = new Violations(snapshotTimestamp, serialNumber, model, positionY, positionX, distance,
-								pilotId, firstName, lastName, phoneNumber, email, NDZStatus);
+
+						v.setSnapshotTimestamp(snapshotTimestamp);
+						v.setSerialNumber(serialNumber);
+						v.setModel(model);
+						v.setPositionY(positionY);
+						v.setPositionX(positionX);
+						v.setDistance(distance);
+						v.setPilotId(pilotId);
+						v.setFirstName(firstName);
+						v.setLastName(lastName);
+						v.setPhoneNumber(phoneNumber);
+						v.setEmail(email);
+						v.setNDZStatus(NDZStatus);
 						violations.add(v);
-//						dao.close();
 					}
 
 				}
@@ -240,7 +260,7 @@ public class Dao {
 		} catch (Exception e) {
 			System.out.println(e);
 		}
-//		System.out.println(drones);
+//		System.out.println("testi " +violations +"\n");
 		return violations;
 	}
 
@@ -296,7 +316,7 @@ public class Dao {
 		System.out.println("adjustedTime: " + adjustedTime);// for testing
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
 		String time10MinutesAgoString = sdf.format(adjustedTime);
-		System.out.println("adjustedTime: " + time10MinutesAgoString);// for testing
+//		System.out.println("adjustedTime: " + time10MinutesAgoString);// for testing
 		// Delete all records with a snapshotTimestamp earlier than 10 minutes ago
 		String query = "DELETE FROM violations WHERE snapshotTimestamp < ?";
 		PreparedStatement stmt;
@@ -310,7 +330,33 @@ public class Dao {
 		}
 	}
 
-	// Not in use
+	public void keepSmallestDistance(Violations v) {
+		EntityManager em = getEntityManager();
+		em.getTransaction().begin();
+
+		// Find the smallest distance for the pilot with the given ID
+		String queryString = "SELECT MIN(v.distance) FROM Violations v WHERE v.pilotId = :pilotId AND v.firstName = :firstName AND v.lastName = :lastName";
+		TypedQuery<Double> query = em.createQuery(queryString, Double.class);
+		query.setParameter("pilotId", v.getPilotId());
+		query.setParameter("firstName", v.getFirstName());
+		query.setParameter("lastName", v.getLastName());
+		Double smallestDistance = query.getSingleResult();
+
+		// Delete all rows for the given pilot with a distance other than the smallest
+		// distance or with the same smallest distance as another row for the same pilot
+		queryString = "DELETE FROM Violations v WHERE  v.pilotId = :pilotId AND v.firstName = :firstName AND v.lastName = :lastName AND (v.distance > :smallestDistance OR (v.distance = :smallestDistance AND v.violations_id NOT IN (SELECT MIN(vv.violations_id) FROM Violations vv WHERE vv.pilotId = :pilotId AND vv.firstName = :firstName AND vv.lastName = :lastName AND vv.distance = :smallestDistance)))";
+		Query deleteQuery = em.createQuery(queryString);
+		deleteQuery.setParameter("pilotId", v.getPilotId());
+		deleteQuery.setParameter("firstName", v.getFirstName());
+		deleteQuery.setParameter("lastName", v.getLastName());
+		deleteQuery.setParameter("smallestDistance", smallestDistance);
+		deleteQuery.executeUpdate();
+
+		em.getTransaction().commit();
+		em.close();
+	}
+
+	// reading and keeping the closest distance only
 	public List<Violations> readAllTheData() {
 		// TODO Auto-generated method stub
 
@@ -339,6 +385,8 @@ public class Dao {
 
 				Violations violation = new Violations(id, snapshotTimestamp, serialNumber, model, positionY, positionX,
 						distance, pilotId, firstName, lastName, phoneNumber, email, NDZStatus);
+
+				keepSmallestDistance(violation);
 				// Add the Violations object to the list
 				violations.add(violation);
 				// Close the ResultSet, Prepared Statement, and Connection objects
@@ -354,81 +402,16 @@ public class Dao {
 		return violations;
 	}
 
-	public void keepClosestDistance(String pilotId) throws SQLException {
-		// Query the database for all records with the given pilotId
-		String query = "SELECT * FROM violations WHERE pilotId = ?";
-		PreparedStatement stmt = conn.prepareStatement(query);
-		stmt.setString(1, pilotId);
-		ResultSet rs = stmt.executeQuery();
-
-		// Keep track of the minimum distance and the corresponding record id
-		double minDistance = Double.MAX_VALUE;
-		int minId = -1;
-
-		// Iterate through the records to find the one with the minimum distance
-		while (rs.next()) {
-			int id = rs.getInt("violations_id");
-			double distance = rs.getDouble("distance");
-			if (distance < minDistance) {
-				minDistance = distance;
-				minId = id;
-			}
-		}
-
-		// Delete all records with the given pilotId except for the one with the minimum
-		// distance
-		if (minId != -1) {
-			query = "DELETE FROM violations WHERE pilotId = ? AND violations_id != ?";
-			stmt = conn.prepareStatement(query);
-			stmt.setString(1, pilotId);
-			stmt.setInt(2, minId);
-			stmt.executeUpdate();
-		}
-	}
-
-	// In use. reading all the data with the closest distance
+	// Reading all the data with the closest distance and only show the closest distance
 	public List<Violations> readAllData() throws Exception {
 		List<Violations> violations = new ArrayList<>();
 
-		// Create a map to store the bigger distances for each pilot
-		Map<String, Double> maxDistanceMap = new HashMap<>();
-
-		String query = "SELECT * FROM violations ORDER BY pilotId, distance";
-		PreparedStatement stmt = conn.prepareStatement(query);
-		ResultSet rs = stmt.executeQuery();
-		String prevPilotId = "";
-		double prevDistance = Double.MAX_VALUE;
-		while (rs.next()) {
-			String currentPilotId = rs.getString("pilotId");
-			double currentDistance = rs.getDouble("distance");
-			if (currentPilotId.equals(prevPilotId)) {
-				// If the current record has a bigger distance than the previous one, update
-				// the max distance for this pilot
-				if (currentDistance > prevDistance) {
-					maxDistanceMap.put(currentPilotId, currentDistance);
-				}
-			} else {
-				prevPilotId = currentPilotId;
-				prevDistance = currentDistance;
-				// Add the max distance for this pilot to the map
-				maxDistanceMap.put(currentPilotId, currentDistance);
-			}
-
-			System.out.println("test: " + maxDistanceMap);
-		}
-		// Call the keepClosestDistance method for each pilot to keep the closest
-		// distance only in the db and deleting the rest
-		for (Map.Entry<String, Double> entry : maxDistanceMap.entrySet()) {
-			String pilotId = entry.getKey();
-			keepClosestDistance(pilotId);
-			System.out.println("test: " + pilotId);
-		}
-
+		readAllTheData();
 		// Reading the final data
-		query = "SELECT * FROM violations ORDER BY snapshotTimestamp";
+		String query = "SELECT * FROM violations ORDER BY snapshotTimestamp";
 //		String sql = "SELECT * FROM violations WHERE distance = (SELECT MIN(distance) FROM violations WHERE pilotId = ?) ORDER BY snapshotTimestamp";
 		try {
-			stmt = conn.prepareStatement(query);
+			PreparedStatement stmt = conn.prepareStatement(query);
 //			stmt.setString(1, pilotId);
 			ResultSet resultSet = stmt.executeQuery();
 			while (resultSet.next()) {
@@ -472,7 +455,7 @@ public class Dao {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		System.out.println("test Final: " + violations);
+//		System.out.println("test Final: " + violations);
 		return violations;
 	}
 

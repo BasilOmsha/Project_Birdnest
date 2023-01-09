@@ -28,7 +28,7 @@ public class Observation extends HttpServlet {
 		try {
 			List<Violations> violations = new ArrayList<>();
 			violations = dao.get_response();
-			System.out.println("show: " + violations + '\n');
+//			System.out.println("show: " + violations + '\n');
 			if (violations != null && !violations.isEmpty()) {
 				// Iterate through the list of capturesA
 				for (Violations v : violations) {
@@ -36,10 +36,10 @@ public class Observation extends HttpServlet {
 //					System.out.println("Time Stamp " + v.getSnapshotTimestamp());
 					dao.addViolations(v);
 					// Print the attributes of each drone
-					System.out.println(v.getSnapshotTimestamp() + " " + v.getSerialNumber() + " " + v.getModel() + " "
-							+ v.getFirstName() + " " + v.getLastName() + " " + v.getPhoneNumber() + " " + v.getEmail()
-							+ " " + v.getPositionY() + " " + v.getPositionX() + " " + v.getDistance() + " "
-							+ v.getNDZStatus());
+//					System.out.println(v.getSnapshotTimestamp() + " " + v.getSerialNumber() + " " + v.getModel() + " "
+//							+ v.getFirstName() + " " + v.getLastName() + " " + v.getPhoneNumber() + " " + v.getEmail()
+//							+ " " + v.getPositionY() + " " + v.getPositionX() + " " + v.getDistance() + " "
+//							+ v.getNDZStatus());
 				}
 //				response.sendRedirect("./jsp/drones.jsp");
 				try {

@@ -22,7 +22,7 @@ public class Refresh extends HttpServlet {
 		Dao dao = new Dao();
 		try {
 			List<Violations> dataList = dao.readAllData();
-			System.out.println("FinctionList: " + dao.readAllData());
+//			System.out.println("FunctionList: " + dataList);
 
 			response.setContentType("application/json");
 			response.setCharacterEncoding("UTF-8");
