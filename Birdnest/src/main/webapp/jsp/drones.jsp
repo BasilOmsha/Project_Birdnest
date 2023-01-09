@@ -22,7 +22,7 @@
 		<br>
 		<h1>Drone Violations</h1>
 		<br>
-		<form class="sign-up-form" id="myForm">
+		<form class="form" id="myForm">
 			<div id="table-container">
 				<table class="table  " id="myTable">
 					<thead class="tablehead">
