@@ -1,4 +1,4 @@
-# Project_Birdnest (Not finalized yet)
+# Project_Birdnest
 ## Purpose
 This is a web application fulfilling the requirments asked for the summer 2023 trainee position by Reaktor, which are:<br>
 
