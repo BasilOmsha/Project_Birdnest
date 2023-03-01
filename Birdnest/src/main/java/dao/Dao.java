@@ -426,7 +426,7 @@ public class Dao {
 				cal2.setTime(snapshotDate);
 				cal2.add(Calendar.HOUR, +2);
 				Timestamp adjustedTime = new Timestamp(cal2.getTimeInMillis());
-				SimpleDateFormat sdf = new SimpleDateFormat("dd.MM.yyyy, hh:mm:ss a");
+				SimpleDateFormat sdf = new SimpleDateFormat("dd.MM.yyyy, HH:mm:ss");
 				String snapshotTimestamp = sdf.format(adjustedTime);
 				String serialNumber = resultSet.getString("serialNumber");
 				String model = resultSet.getString("model");
