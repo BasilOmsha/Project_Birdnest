@@ -1,1 +1,4 @@
 /target/
+
+persistence.xml
+appengine-web.xml
